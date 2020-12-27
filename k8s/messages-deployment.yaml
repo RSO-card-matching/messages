@@ -72,7 +72,7 @@ kind: Service
 metadata:
   name: messages
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
     - port: 8080
       protocol: TCP
