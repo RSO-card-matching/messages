@@ -36,6 +36,14 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl = getenv("OAUTH_TOKEN_PROVIDER") +
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origin_regex = r"https:\/\/.*cardmatching.ovh.*",
+    allow_credentials = True,
+    allow_methods = ["*"],
+    allow_headers = ["*"],
+)
+
 
 
 async def get_current_user_from_token(token: str = Depends(oauth2_scheme)) -> int:
