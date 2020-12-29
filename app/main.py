@@ -6,6 +6,7 @@ from os import getenv
 
 from fastapi import Depends, FastAPI, Form, HTTPException, Path, status
 from fastapi.security import OAuth2PasswordBearer
+from fastapi.middleware.cors import CORSMiddleware
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
