@@ -3,6 +3,7 @@
 from datetime import datetime, timedelta
 from typing import Optional, List
 from os import getenv
+import requests
 
 from fastapi import Depends, FastAPI, Form, HTTPException, Path, status
 from fastapi.security import OAuth2PasswordBearer
@@ -162,6 +163,22 @@ async def liveness_check():
     return "OK"
 
 
-@app.get("/health/ready", response_model = str)
-async def readiness_check():
-    return "OK"  # TODO: čekiranje baze or sth?
+@app.get("/health/ready", response_model = dict)
+async def readiness_check(db: Session = Depends(get_db)):
+    if database.test_connection(db):
+        try:
+            requests.get(getenv("OAUTH_TOKEN_PROVIDER") + "/tokens", timeout = 1.)
+            return {
+                "database": "OK",
+                "token_provider": "OK"
+            }
+        except requests.exceptions.Timeout:
+            raise HTTPException(
+                status_code = status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail = "Token provider down",
+            )
+    else:
+        raise HTTPException(
+            status_code = status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail = "Database down",
+        )
